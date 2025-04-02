@@ -43,7 +43,8 @@ def display_shape(shape):
     image = Image.open(shape["image"])
     image = image.resize((300,300))
     image = ImageTk.PhotoImage(image)
-    
+    image_label = tk.Label(root)
+    image_label.pack()
     image_label.config(image=image)
     image_label.image = image
 
@@ -54,7 +55,6 @@ def choose_shape():
     global display_question_label
     question_num = (question_num + 1)
     selected_shape = random.choice(shapes)
-    display_shape(selected_shape)
     shapes.remove(selected_shape)
     print(selected_shape["type"])
     if selected_shape["type"] == "area":
@@ -63,9 +63,13 @@ def choose_shape():
     if selected_shape["type"] == "perimeter":
         question_type = "perimeter"
     print(question_type)
+    
     question_label_text = "What is the "+question_type+" of this shape?"
     display_question_label = tk.Label(root, text=question_label_text)
     display_question_label.pack()
+    display_shape(selected_shape)
+    
+
     
 def verify_answer():
     global correct_answer
@@ -94,7 +98,9 @@ def verify_answer():
         root.after(1000, next_question)
         display_question_label.destroy()
         
+        
 def next_question():
+    image_label.destroy()
     choose_shape()
     
     
@@ -103,17 +109,15 @@ root = tk.Tk()
 
 
 
-image_label = tk.Label(root)
-image_label.pack()
+
+
+choose_shape()
 
 user_entry = tk.Entry(root, font=("Arial", 14))
 user_entry.pack()
 
 submit_button = tk.Button(root, text="Submit", command=verify_answer)
 submit_button.pack()
-
-choose_shape()
-
 #print(correct_answer)
 
 root.mainloop()
