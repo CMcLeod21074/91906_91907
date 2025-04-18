@@ -11,23 +11,24 @@ from tkinter.messagebox import askyesno
 from PIL import Image, ImageTk
 import time
 
-gameplay_window = tk.Tk() #Create gameplay window
-gameplay_window.title("Gameplay")
-
-score_window = tk.Tk() #Create score window
-score_window.title("Score")
 
 welcome_window = tk.Tk() #Create welcome window
-welcome_window.title("Welcome")
+welcome_window.title("Home")
 
-sign_up_window = tk.Tk() #Create sign up window
+gameplay_window = tk.Toplevel() #Create gameplay window
+gameplay_window.title("Gameplay")
+
+game_mode_window = tk.Toplevel() #Create game mode selection window
+game_mode_window.title("Gamemode Selection")
+
+score_window = tk.Toplevel() #Create score window
+score_window.title("Score")
+
+sign_up_window = tk.Toplevel() #Create sign up window
 sign_up_window.title("Sign Up")
 
-login_window = tk.Tk() #Create login window
+login_window = tk.Toplevel() #Create login window
 login_window.title("Login")
-
-game_mode_window = tk.Tk() #Create game mode selection window
-game_mode_window.title("Gamemode Selection")
 
 question_frame = tk.LabelFrame(gameplay_window) 
 question_frame.grid(row=2, column=3)
@@ -60,8 +61,11 @@ shapes_easy = [
 
 ]
 
-def display_shape(shape):
-    image = Image.open(shape["image"])
+
+
+    
+def display_shape():
+    image = Image.open(selected_shape["image"])
     image = image.resize((300,300))
     image = ImageTk.PhotoImage(image)
     image_label.config(image=image)
@@ -74,8 +78,8 @@ def choose_shape():
     global display_question_label
     user_answer_entry.delete(0, tk.END)
     question_num = (question_num + 1)
-    selected_shape = random.choice(shapes)
-    shapes.remove(selected_shape)
+    selected_shape = random.choice(shapes_easy)
+    shapes_easy.remove(selected_shape)
     if selected_shape["type"] == "area":
         question_type = "area"
         
@@ -88,7 +92,7 @@ def choose_shape():
     question_label_text = "What is the "+question_type+" of this shape?"
     display_question_label = tk.Label(question_frame, text=question_label_text, font=(20))
     display_question_label.grid(row=0, column=0)
-    display_shape(selected_shape)
+    display_shape()
     
 def verify_answer():
     global correct_answer
@@ -164,29 +168,50 @@ def game_over():
     print("Final score:",score)
     score_window.mainloop()
     
-def home():
+def gameplay_home():
+    welcome_window.deiconify()
+    gameplay_window.withdraw()
+
+def game_mode_home():
+    welcome_window.deiconify()
+    game_mode_window.withdraw()
+
+def score_home():
+    welcome_window.deiconify()
+    score_window.withdraw()
+
+def sign_up_home():
     welcome_window.deiconify()
     sign_up_window.withdraw()
-    login_window.withdraw()
-    gameplay_window.withdraw()
-    score_window.withdraw()
-    game_mode_window.withdraw()
+
+def login_home():
+    welcome_window.deiconify()
+    login_window.withdraw()    
 
 def quit():
     welcome_window.destroy()
-    gameplay_window.destroy()
 
+def game_mode_submit():
+    global selected_game_model
+    selected_game_mode = str(game_mode.get())
+    print(selected_game_mode)
 
 def game_mode_selection():
+    global game_mode
     game_mode_window.deiconify()
+    game_mode = StringVar() 
+    game_mode_easy = tk.Radiobutton(game_mode_window, text="Easy", variable=game_mode, value="Easy")
+    game_mode_easy.grid(row=1, column=0)
+    game_mode_easy.select()
+    game_mode_medium = tk.Radiobutton(game_mode_window, text="Medium", variable=game_mode, value="Medium")
+    game_mode_medium.grid(row=2, column=0)
+    game_mode_medium.deselect()
+    game_mode_hard = tk.Radiobutton(game_mode_window, text="Hard", variable=game_mode, value="Hard")
+    game_mode_hard.grid(row=3, column=0)
+    game_mode_hard.deselect()
     game_mode_button = tk.Button(game_mode_window, text="Select", command=game_mode_submit)
     game_mode_button.grid(row=5, column=3)
     game_mode_window.mainloop()
-    
-def game_mode_submit():
-    selected_game_mode = str(game_mode.get())
-    print(selected_game_mode)
-    #if se
     
 
 def welcome():
@@ -226,14 +251,14 @@ def gameplay():
 
     submit_button = tk.Button(question_frame, text="Submit", command=verify_answer)
     submit_button.grid(row=1, column=2)
-    home_button = tk.Button(gameplay_window, text="Home", command=home)
+    home_button = tk.Button(gameplay_window, text="Home", command=gameplay_home)
     home_button.grid(row=0, column=4)
     gameplay_window.mainloop()
 
 def sign_up():
     welcome_window.withdraw()
     sign_up_window.deiconify()
-    home_button = tk.Button(sign_up_window, text="Home", command=home)
+    home_button = tk.Button(sign_up_window, text="Home", command=sign_up_home)
     home_button.grid(row=0, column=1)
     sign_up_username_label = tk.Label(sign_up_window, text="Username", font=(20))
     sign_up_username_label.grid(row=1, column=0)
@@ -253,7 +278,7 @@ def append_sign_up():
     sign_up_return = askyesno(title="Sign up successful", message="Sign up successful. Would you like to return to the menu?")
 
     if sign_up_return == True:
-        home()
+        sign_up_home()
         sign_up_username_entry.delete(0, tk.END)
         sign_up_password_entry.delete(0, tk.END)
         
@@ -266,14 +291,14 @@ def login():
     login_window.deiconify()
     login_username_entry.delete(0, tk.END)
     login_password_entry.delete(0, tk.END)
-    home_button = tk.Button(login_window, text="Home", command=home)
+    home_button = tk.Button(login_window, text="Home", command=login_home)
     home_button.grid(row=0, column=1)
     login_username_label = tk.Label(login_window, text="Username", font=(20))
     login_username_label.grid(row=1, column=0)
     login_password_label = tk.Label(login_window, text="Password", font=(20))
     login_password_label.grid(row=2, column=0)
-    login_button = tk.Button(login_window, text="Login", command=append_login)
-    login_button.grid(row=3, column=1)
+    append_login_button = tk.Button(login_window, text="Login", command=append_login)
+    append_login_button.grid(row=3, column=1)
     login_window.mainloop()
 
 def append_login():
@@ -292,6 +317,7 @@ def append_login():
         if login_list[0] == login_username and login_list[1] == login_password:
             print("Match")
             no_login_found = False
+            login_database.close()
             gameplay()
             
         else:
@@ -316,9 +342,7 @@ def main():
     global sign_up_username_entry
     global sign_up_password_entry
     global login_username_entry
-    global login_password_entry
-    global game_mode
-    game_mode = StringVar()
+    global login_password_entry  
     login_window.withdraw()
     sign_up_window.withdraw()
     gameplay_window.withdraw()
@@ -334,16 +358,6 @@ def main():
     login_username_entry.grid(row=1, column=1)
     login_password_entry = tk.Entry(login_window, show="●", font=(14))
     login_password_entry.grid(row=2, column=1)
-    game_mode_easy = tk.Radiobutton(game_mode_window, text="Easy", variable=game_mode, value="Easy")
-    game_mode_easy.grid(row=1, column=0)
-    game_mode_easy.select()
-    game_mode_medium = tk.Radiobutton(game_mode_window, text="Medium", variable=game_mode, value="Medium")
-    game_mode_medium.grid(row=2, column=0)
-    game_mode_medium.deselect()
-    game_mode_hard = tk.Radiobutton(game_mode_window, text="Hard", variable=game_mode, value="Hard")
-    game_mode_hard.grid(row=3, column=0)
-    game_mode_hard.deselect()
-
     welcome()
 
 image_label = tk.Label(question_frame)
