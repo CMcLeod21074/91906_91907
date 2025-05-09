@@ -12,36 +12,54 @@ from tkinter.messagebox import askyesno
 from PIL import Image, ImageTk
 import time
 
-
 welcome_window = tk.Tk() #Create welcome window
 welcome_window.title("Home")
+welcome_window.geometry("300x300")
+welcome_window.configure(background="#6fdc6f")
 
 gameplay_window = tk.Toplevel() #Create gameplay window
 gameplay_window.title("Gameplay")
+gameplay_window.geometry("710x500")
+gameplay_window.configure(background="#6fdc6f")
 
 game_mode_window = tk.Toplevel() #Create game mode selection window
 game_mode_window.title("Gamemode Selection")
+game_mode_window.geometry("220x150")
+game_mode_window.configure(background="#6fdc6f")
 
 score_window = tk.Toplevel() #Create score window
 score_window.title("Score")
+score_window.configure(background="#6fdc6f")
 
 highscore_window = tk.Toplevel() #Create highscore window
 highscore_window.title("Highscores")
+highscore_window.configure(background="#6fdc6f")
 
 sign_up_window = tk.Toplevel() #Create sign up window
 sign_up_window.title("Sign Up")
+sign_up_window.geometry("300x110")
+sign_up_window.configure(background="#6fdc6f")
 
 login_window = tk.Toplevel() #Create login window
 login_window.title("Login")
+login_window.geometry("300x110")
+login_window.configure(background="#6fdc6f")
+
+username_frame = tk.LabelFrame(gameplay_window)
+username_frame.grid(row=1, column=0)
+username_frame.configure(background="#6fdc6f")
 
 question_frame = tk.LabelFrame(gameplay_window) 
-question_frame.grid(row=2, column=3)
+question_frame.grid(row=2, column=1)
+question_frame.configure(background="#98e698", border=1)
 
 score_frame = tk.LabelFrame(score_window)
 score_frame.grid(row=1, column=1)
+score_frame.configure(background="#6fdc6f")
 
 highscore_frame = tk.LabelFrame(highscore_window)
 highscore_frame.grid(row=3, column=1)
+highscore_frame.configure(background="#6fdc6f")
 
 #Database of shapes
 shapes_easy = [
@@ -68,7 +86,12 @@ shapes_easy = [
 
 ]
 
-    
+global easy_highscore_count
+easy_highscore_count = 0
+
+global line_match
+line_match = False
+
 def display_shape():
     image = Image.open(selected_shape["image"])
     image = image.resize((300,300))
@@ -95,7 +118,7 @@ def choose_shape():
     print("Question Type: ", question_type)
     
     question_label_text = "What is the "+question_type+" of this shape?"
-    display_question_label = tk.Label(question_frame, text=question_label_text, font=(20))
+    display_question_label = tk.Label(question_frame, text=question_label_text, bg="#98e698", font=("Times New Roman",20))
     display_question_label.grid(row=0, column=0)
     display_shape()
     
@@ -177,6 +200,103 @@ def login_home():
 def quit():
     welcome_window.destroy()
 
+def highscore_append():
+    highscore_database = open("highscore database.txt","r")
+    highscore_sort1 = open("highscore sort 1.txt","w")
+    highscore_sort2 = open("highscore sort 2.txt","a")
+    highscore_sort2.write(line_original)
+
+    for append_line in highscore_database:
+        if append_line != line_original:
+            final_append = (append_line)
+            highscore_sort1.write(final_append)
+
+    highscore_database = open("easy highscore database.txt","w")
+    highscore_sort1 = open("easy highscore sort 1.txt","r")
+    highscore_database.write(easy_sort1.read())
+    highscore_database.close()
+    highscore_sort1.close()
+    highscore_sort2.close()
+    compare_time()
+
+def compare_time():
+    global original_line
+    global line_original
+    global line_match   
+    do_append=False
+    
+    highscore_sort2 = open("highscore sort 2.txt","r")
+    highscore_sort2_count = 0
+    
+    for line in highscore_sort2:
+        highscore_sort2_count=highscore_sort2_count+1
+    highscore_sort2.close()
+
+    highscore_sort2_count = int(highscore_sort2_count)
+
+    if highscore_highscore_count == highscore_sort2_count:
+        line_match = True
+
+    highscore_database = open("highscore database.txt","r")
+    for line_original in highscore_database:
+        original_line = line_original.strip("\n").split(",")
+        original = original_line[2]
+        original = float(original)
+        name_original = original_line[0]
+        score_original = original_line[1]
+        score_original = int(score_original)
+        
+        highscore_database = open("highscore database.txt","r")
+        for line in highscore_database:
+            compare_line = line.strip("\n").split(",")
+            compare = compare_line[2]
+            compare = float(compare)
+            name_compare = compare_line[0]
+            score_compare = compare_line[1]
+            score_compare = int(score_compare)
+      
+            if name_original != name_compare and original < compare:
+                do_append=True
+
+            if name_original != name_compare and original == compare:
+
+                if score_original > score_compare:
+                    do_append=True
+
+                if score_original == score_compare:
+                    do_append=True
+               
+                if score_original < score_compare:
+                    do_append=False
+                    break
+
+            if name_original != name_compare and original > compare:
+                do_append=False
+                break
+
+        if do_append == True and line_match == False:
+            highscore_append()
+            
+    highscore_database.close()
+
+def compare_score():
+    global selected_game_mode
+    compare_score = 10
+    for x in range(11):
+        highscore_sort2 = open("highscore sort 2.txt","r")
+        highscore_sort1 = open("highscore sort 1.txt","a")
+        for line in highscore_sort2:
+                highscore_list = line.strip("\n").split(",")
+                original_score = int(highscore_list[1])
+                difficulty = str(highscore_list[3])
+                difficulty = difficulty.title()
+                if original_score == compare_score:
+                    highscore_sort1.write(line)
+        compare_score = (compare_score-1)
+
+    highscore_sort2.close()
+    highscore_sort1.close()
+
 def game_over():
     global score
     gameplay_window.withdraw()
@@ -185,94 +305,102 @@ def game_over():
     final_time = ("00:30")
     score = str(score)
     append_score = str("," + score)
-    append_time = str("," + final_time + "\n") 
-    home_button = tk.Button(score_window, text="Home", command=score_home)
+    append_time = str("," + final_time)
+    append_game_mode = str("," + selected_game_mode + "\n")
+    home_button = tk.Button(score_window, text="Home", bg="#c1f0c1", fg="black", font=("Times New Roman",10), command=score_home)
     home_button.grid(row=0, column=3)
-    play_again_button = tk.Button(score_window, text="Play again", command=gameplay)
+    play_again_button = tk.Button(score_window, text="Play again", bg="#c1f0c1", fg="black", font=("Times New Roman",10), command=gameplay)
     play_again_button.grid(row=0, column=0)
     
-    game_over_username_heading = tk.Label(score_frame, text="Username", font=(25))
+    game_over_username_heading = tk.Label(score_frame, text="Username", bg="#6fdc6f", font=("Times New Roman",14))
     game_over_username_heading.grid(row=1, column = 0)
-    game_over_tab1 = tk.Label(score_frame, text="\t")
+    game_over_tab1 = tk.Label(score_frame, text="\t", bg="#6fdc6f")
     game_over_tab1.grid(row=1, column = 1)
-    game_over_score_heading = tk.Label(score_frame, text="Score", font=(25))
+    game_over_score_heading = tk.Label(score_frame, text="Score", bg="#6fdc6f", font=("Times New Roman",14))
     game_over_score_heading.grid(row=1, column = 2)
-    game_over_tab2 = tk.Label(score_frame, text="\t")
+    game_over_tab2 = tk.Label(score_frame, text="\t", bg="#6fdc6f")
     game_over_tab2.grid(row=1, column = 3)
-    game_over_time_heading = tk.Label(score_frame, text="Time", font=(25))
+    game_over_time_heading = tk.Label(score_frame, text="Time", bg="#6fdc6f", font=("Times New Roman",14))
     game_over_time_heading.grid(row=1, column = 4)
-    game_over_tab3 = tk.Label(score_frame, text="\t")
+    game_over_tab3 = tk.Label(score_frame, text="\t", bg="#6fdc6f")
     game_over_tab3.grid(row=1, column = 5)
-    game_over_difficulty_heading = tk.Label(score_frame, text="Difficulty", font=(25))
+    game_over_difficulty_heading = tk.Label(score_frame, text="Difficulty", bg="#6fdc6f", font=("Times New Roman",14))
     game_over_difficulty_heading.grid(row=1, column = 6)
 
-    game_over_username = tk.Label(score_frame, text=login_username, font=(25))
+    game_over_username = tk.Label(score_frame, text=login_username, bg="#6fdc6f", font=("Times New Roman",10))
     game_over_username.grid(row=2, column = 0)
-    game_over_tab4 = tk.Label(score_frame, text="\t")
+    game_over_tab4 = tk.Label(score_frame, text="\t", bg="#6fdc6f")
     game_over_tab4.grid(row=2, column = 1)
-    game_over_score = tk.Label(score_frame, text=final_score, font=(25))
+    game_over_score = tk.Label(score_frame, text=final_score, bg="#6fdc6f", font=("Times New Roman",10))
     game_over_score.grid(row=2, column = 2)
-    game_over_tab5 = tk.Label(score_frame, text="\t")
+    game_over_tab5 = tk.Label(score_frame, text="\t", bg="#6fdc6f")
     game_over_tab5.grid(row=2, column = 3)
-    game_over_time = tk.Label(score_frame, text=final_time, font=(25))
+    game_over_time = tk.Label(score_frame, text=final_time, bg="#6fdc6f", font=("Times New Roman",10))
     game_over_time.grid(row=2, column = 4)
-    game_over_tab6 = tk.Label(score_frame, text="\t")
+    game_over_tab6 = tk.Label(score_frame, text="\t", bg="#6fdc6f")
     game_over_tab6.grid(row=2, column = 5)
-    game_over_difficulty = tk.Label(score_frame, text=selected_game_mode, font=(25))
+    game_over_difficulty = tk.Label(score_frame, text=selected_game_mode, bg="#6fdc6f", font=("Times New Roman",10))
     game_over_difficulty.grid(row=2, column = 6)
     print("Final score:",score)
     
 
-    score_data = str(login_username + append_score + append_time)
+    score_data = str(login_username + append_score + append_time + append_game_mode)
 
     print("APPENDING")
-    if selected_game_mode == "Easy":
-        easy_highscore_database = open("easy highscore database.txt","a")
-        easy_highscore_database.write(score_data)
-        print("Written to easy highscore database")
-        easy_highscore_database.close()
-        easy_highscore_database = open("easy highscore database.txt","r")
-        for line in easy_highscore_database:
-            easy_highscore_list = line.strip("\n").split(",")
-            print(easy_highscore_list)
+    highscore_database = open("highscore database.txt","a")
+    highscore_database.write(score_data)
+    print("highscore database")
+    highscore_database.close()
+    #easy_highscore_database = open("easy highscore database.txt","r")
+    #easy_sort1 = open("easy highscore sort 1.txt","a")
+    #compare_score = 10
+
+        #while compare_score > 0:
+        #    for line in easy_highscore_database:
+        #        easy_highscore_list = line.strip("\n").split(",")
+        #        if easy_highscore_list[1] == compare_score:
+        #            easy_sort1.write(line)
+        #            compare_score  = (compare_score-1)
+        #            print(compare_score)
+        #            print("TEST")
 
 
-        easy_highscore_database.close()
+        #easy_highscore_database.close()
         
-    elif selected_game_mode == "Medium":
-        medium_highscore_database = open("medium highscore database.txt","a")
-        medium_highscore_database.write(score_data)
-        medium_highscore_database.close()
-        print("Written to medium highscore database")
+#    elif selected_game_mode == "Medium":
+#        medium_highscore_database = open("medium highscore database.txt","a")
+#        medium_highscore_database.write(score_data)
+#        medium_highscore_database.close()
+#        print("Written to medium highscore database")
 
-    elif selected_game_mode == "Hard":
-        hard_highscore_database = open("hard highscore database.txt","a")
-        hard_highscore_database.write(score_data)
-        hard_highscore_database.close()
-        print("Written to hard highscore database")
+#    elif selected_game_mode == "Hard":
+#        hard_highscore_database = open("hard highscore database.txt","a")
+#        hard_highscore_database.write(score_data)
+#        hard_highscore_database.close()
+#        print("Written to hard highscore database")
 
     score_window.mainloop()
 
 def view_highscores():
     welcome_window.withdraw()
     highscore_window.deiconify()
-    home_button = tk.Button(highscore_window, text="Home", command=highscore_home)
+    home_button = tk.Button(highscore_window, text="Home", bg="#c1f0c1", fg="black", font=("Times New Roman",10), command=highscore_home)
     home_button.grid(row=0, column=3)
-    highscore_placing_heading = tk.Label(highscore_frame, text="Placing", font=(25))
+    highscore_placing_heading = tk.Label(highscore_frame, text="Placing", bg="#6fdc6f", font=("Times New Roman",14))
     highscore_placing_heading.grid(row=1, column = 0)
-    highscore_tab1 = tk.Label(highscore_frame, text="\t")
+    highscore_tab1 = tk.Label(highscore_frame, text="\t", bg="#6fdc6f")
     highscore_tab1.grid(row=1, column = 1)
-    highscore_username_heading = tk.Label(highscore_frame, text="Username", font=(25))
+    highscore_username_heading = tk.Label(highscore_frame, text="Username", bg="#6fdc6f", font=("Times New Roman",14))
     highscore_username_heading.grid(row=1, column = 2)
-    highscore_tab2 = tk.Label(highscore_frame, text="\t")
+    highscore_tab2 = tk.Label(highscore_frame, text="\t", bg="#6fdc6f")
     highscore_tab2.grid(row=1, column = 3)
-    highscore_score_heading = tk.Label(highscore_frame, text="Score", font=(25))
+    highscore_score_heading = tk.Label(highscore_frame, text="Score", bg="#6fdc6f", font=("Times New Roman",14))
     highscore_score_heading.grid(row=1, column = 4)
-    highscore_tab3 = tk.Label(highscore_frame, text="\t")
+    highscore_tab3 = tk.Label(highscore_frame, text="\t", bg="#6fdc6f")
     highscore_tab3.grid(row=1, column = 5)
-    highscore_time_heading = tk.Label(highscore_frame, text="Time", font=(25))
+    highscore_time_heading = tk.Label(highscore_frame, text="Time", bg="#6fdc6f", font=("Times New Roman",14))
     highscore_time_heading.grid(row=1, column = 6)
-    button = tk.Button(highscore_window, text="Select", command=update_highscores)
+    button = tk.Button(highscore_window, text="Select", bg="#c1f0c1", fg="black", font=("Times New Roman",10), command=update_highscores)
     button.grid(row=2, column=1)
     update_highscores()
 
@@ -298,37 +426,41 @@ def game_mode_selection():
     login_window.withdraw()
     game_mode_window.deiconify()
     game_mode = StringVar() 
-    game_mode_easy = tk.Radiobutton(game_mode_window, text="Easy", variable=game_mode, value="Easy")
+    game_mode_easy = tk.Radiobutton(game_mode_window, text="Easy", variable=game_mode, value="Easy", bg="#6fdc6f")
     game_mode_easy.grid(row=1, column=0)
     game_mode_easy.select()
-    game_mode_medium = tk.Radiobutton(game_mode_window, text="Medium", variable=game_mode, value="Medium")
+    game_mode_medium = tk.Radiobutton(game_mode_window, text="Medium", variable=game_mode, value="Medium", bg="#6fdc6f")
     game_mode_medium.grid(row=2, column=0)
     game_mode_medium.deselect()
-    game_mode_hard = tk.Radiobutton(game_mode_window, text="Hard", variable=game_mode, value="Hard")
+    game_mode_hard = tk.Radiobutton(game_mode_window, text="Hard", variable=game_mode, value="Hard", bg="#6fdc6f")
     game_mode_hard.grid(row=3, column=0)
     game_mode_hard.deselect()
-    game_mode_button = tk.Button(game_mode_window, text="Select", command=game_mode_submit)
+    game_mode_button = tk.Button(game_mode_window, text="Select", bg="#c1f0c1", fg="black", command=game_mode_submit)
     game_mode_button.grid(row=5, column=3)
-    game_mode_home_button = tk.Button(game_mode_window, text="Home", command=game_mode_home)
+    game_mode_home_button = tk.Button(game_mode_window, text="Home", bg="#c1f0c1", fg="black", command=game_mode_home)
     game_mode_home_button.grid(row=0, column=3)
-    game_mode_label = tk.Label(game_mode_window, text="Select a game mode:   ", font=(20))
+    game_mode_label = tk.Label(game_mode_window, text="Select a game mode:   ", bg="#6fdc6f", font=("Times New Roman",14))
     game_mode_label.grid(row=0, column =0) 
     game_mode_window.mainloop()
     
 
 def welcome():
-    start_button = tk.Button(welcome_window, text="Start", command=game_mode_selection)
+    start_button = tk.Button(welcome_window, text="Start", bg="#c1f0c1", fg="black", font=("Times New Roman",10), command=game_mode_selection)
     start_button.grid(row=0, column=0)
-    quit_button = tk.Button(welcome_window, text="Quit", command=quit)
-    quit_button.grid(row=0, column=4)
-    login_button = tk.Button(welcome_window, text="Login", command=login)
-    login_button.grid(row=1, column=1)
-    sign_up_button = tk.Button(welcome_window, text="Sign up", command=sign_up)
-    sign_up_button.grid(row=2, column=1)
-    view_highscores_button = tk.Button(welcome_window, text="View Highscores", command=view_highscores)
-    view_highscores_button.grid(row=3, column=1)
-    game_over_button = tk.Button(welcome_window, text="Game over",command=temp_game_over)
-    game_over_button.grid(row=4, column=1)
+    quit_button = tk.Button(welcome_window, text="Quit", bg="#c1f0c1", fg="black", font=("Times New Roman",10), command=quit)
+    quit_button.grid(row=0, column=2)
+    login_button = tk.Button(welcome_window, width = 13, text="Login", bg="#c1f0c1", fg="black", font=("Times New Roman",10), command=login)
+    login_button.grid(row=2, column=1)
+    sign_up_button = tk.Button(welcome_window, width = 13, text="Sign up", bg="#c1f0c1", fg="black", font=("Times New Roman",10), command=sign_up)
+    sign_up_button.grid(row=3, column=1)
+    view_highscores_button = tk.Button(welcome_window, width = 13, text="View Highscores", bg="#c1f0c1", fg="black", font=("Times New Roman",10), command=view_highscores)
+    view_highscores_button.grid(row=4, column=1)
+    game_over_button = tk.Button(welcome_window, width = 13, text="Game over", bg="#c1f0c1", fg="black", font=("Times New Roman",10), command=temp_game_over)
+    game_over_button.grid(row=5, column=1)
+    logo = Image.open("images/characters_background/logo3.png")
+    logo = ImageTk.PhotoImage(logo)
+    logo_label = tk.Label(welcome_window, bg="#6fdc6f", image=logo)
+    logo_label.grid(row=1, column=1)
     welcome_window.mainloop()
     
 def gameplay():
@@ -348,26 +480,30 @@ def gameplay():
     game_mode_window.withdraw()
     gameplay_window.deiconify() 
     choose_shape()
-    username_label = tk.Label(gameplay_window, text=login_username, font=(20))
-    username_label.grid(row=0, column = 0)
-    level_label = tk.Label(gameplay_window, text=selected_game_mode, font=(20))
+    if selected_game_mode == "Medium":
+        level_label_size = 10
+    else:
+        level_label_size = 14
+    username_label = tk.Label(username_frame, text=login_username, bg="#6fdc6f", font=("Times New Roman",14))
+    username_label.grid(row=1, column = 0)
+    level_label = tk.Label(gameplay_window, text=selected_game_mode, bg="#6fdc6f", font=("Times New Roman",level_label_size))
     level_label.grid(row=1, column = 4)
-    submit_button = tk.Button(question_frame, text="Submit", command=verify_answer)
+    submit_button = tk.Button(question_frame, text="Submit", bg="#c1f0c1", fg="black", font=("Times New Roman",10), command=verify_answer)
     submit_button.grid(row=1, column=2)
-    home_button = tk.Button(gameplay_window, text="Home", command=gameplay_home)
+    home_button = tk.Button(gameplay_window, text="Home", bg="#c1f0c1", fg="black", font=("Times New Roman",10) , command=gameplay_home)
     home_button.grid(row=0, column=4)
     gameplay_window.mainloop()
 
 def sign_up():
     welcome_window.withdraw()
     sign_up_window.deiconify()
-    home_button = tk.Button(sign_up_window, text="Home", command=sign_up_home)
+    home_button = tk.Button(sign_up_window, text="Home", bg="#c1f0c1", fg="black", font=("Times New Roman",10), command=sign_up_home)
     home_button.grid(row=0, column=1)
-    sign_up_username_label = tk.Label(sign_up_window, text="Username", font=(20))
+    sign_up_username_label = tk.Label(sign_up_window, text="Username", bg="#6fdc6f", font=("Times New Roman",14))
     sign_up_username_label.grid(row=1, column=0)
-    sign_up_password_label = tk.Label(sign_up_window, text="Password", font=(20))
+    sign_up_password_label = tk.Label(sign_up_window, text="Password", bg="#6fdc6f", font=("Times New Roman",14))
     sign_up_password_label.grid(row=2, column=0)
-    append_sign_up_button = tk.Button(sign_up_window, text="Sign up", command=append_sign_up)
+    append_sign_up_button = tk.Button(sign_up_window, text="Sign up", bg="#c1f0c1", fg="black", font=("Times New Roman",10), command=append_sign_up)
     append_sign_up_button.grid(row=3, column=1)
     sign_up_window.mainloop()
 
@@ -394,13 +530,13 @@ def login():
     login_window.deiconify()
     login_username_entry.delete(0, tk.END)
     login_password_entry.delete(0, tk.END)
-    home_button = tk.Button(login_window, text="Home", command=login_home)
+    home_button = tk.Button(login_window, text="Home", bg="#c1f0c1", fg="black", font=("Times New Roman",10), command=login_home)
     home_button.grid(row=0, column=1)
-    login_username_label = tk.Label(login_window, text="Username", font=(20))
+    login_username_label = tk.Label(login_window, text="Username", bg="#6fdc6f", font=("Times New Roman",14))
     login_username_label.grid(row=1, column=0)
-    login_password_label = tk.Label(login_window, text="Password", font=(20))
+    login_password_label = tk.Label(login_window, text="Password", bg="#6fdc6f", font=("Times New Roman",14))
     login_password_label.grid(row=2, column=0)
-    append_login_button = tk.Button(login_window, text="Login", command=append_login)
+    append_login_button = tk.Button(login_window, text="Login", bg="#c1f0c1", fg="black", font=("Times New Roman",10), command=append_login)
     append_login_button.grid(row=3, column=1)
     login_window.mainloop()
 
@@ -458,25 +594,25 @@ def main():
     score_window.withdraw()
     highscore_window.withdraw()
     game_mode_window.withdraw()
-    user_answer_entry = tk.Entry(question_frame, font=(14))
+    user_answer_entry = tk.Entry(question_frame, font=("Times New Roman",14))
     user_answer_entry.grid(row=1, column=1)
-    sign_up_username_entry = tk.Entry(sign_up_window, font=(14))
+    sign_up_username_entry = tk.Entry(sign_up_window, font=("Times New Roman",14))
     sign_up_username_entry.grid(row=1, column=1)
-    sign_up_password_entry = tk.Entry(sign_up_window, show="●", font=(14))
+    sign_up_password_entry = tk.Entry(sign_up_window, show="●", font=("Times New Roman",14))
     sign_up_password_entry.grid(row=2, column=1)
-    login_username_entry = tk.Entry(login_window, font=(14))
+    login_username_entry = tk.Entry(login_window, font=("Times New Roman",14))
     login_username_entry.grid(row=1, column=1)
-    login_password_entry = tk.Entry(login_window, show="●", font=(14))
+    login_password_entry = tk.Entry(login_window, show="●", font=("Times New Roman",14))
     login_password_entry.grid(row=2, column=1)
-    highscore_mode_combobox = ttk.Combobox(highscore_window, font=(25), values=["Easy","Medium","Hard"], state="readonly", justify="center")
+    highscore_mode_combobox = ttk.Combobox(highscore_window, font=("Times New Roman",14), values=["Easy","Medium","Hard"], state="readonly", justify="center")
     highscore_mode_combobox.grid(row=1, column=1)
     highscore_mode_combobox.set("Easy")
     welcome()
 
-image_label = tk.Label(question_frame)
+image_label = tk.Label(question_frame, bg="#98e698")
 image_label.grid(row=1, column=0)
-canvas = tk.Canvas(gameplay_window, width=560, height=100, bg="white")
-canvas.grid(row=1, column=3)
+canvas = tk.Canvas(gameplay_window, width=560, height=100, bg="#6fdc6f")
+canvas.grid(row=1, column=1)
 
 bg_image = Image.open("images/characters_background/background.png")
 bg_image = ImageTk.PhotoImage(bg_image)
