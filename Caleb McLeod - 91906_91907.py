@@ -86,8 +86,8 @@ shapes_easy = [
 
 ]
 
-global easy_highscore_count
-easy_highscore_count = 0
+global highscore_count
+highscore_count = 0
 
 global line_match
 line_match = False
@@ -201,9 +201,10 @@ def quit():
     welcome_window.destroy()
 
 def highscore_append():
-    highscore_database = open("highscore database.txt","r")
-    highscore_sort1 = open("highscore sort 1.txt","w")
-    highscore_sort2 = open("highscore sort 2.txt","a")
+    print("HIGHSCORE_APPEND()")
+    highscore_database = open("text files/highscore database.txt","r")
+    highscore_sort1 = open("text files/highscore sort 1.txt","w")
+    highscore_sort2 = open("text files/highscore sort 2.txt","a")
     highscore_sort2.write(line_original)
 
     for append_line in highscore_database:
@@ -211,8 +212,8 @@ def highscore_append():
             final_append = (append_line)
             highscore_sort1.write(final_append)
 
-    highscore_database = open("easy highscore database.txt","w")
-    highscore_sort1 = open("easy highscore sort 1.txt","r")
+    highscore_database = open("text files/easy highscore database.txt","w")
+    highscore_sort1 = open("text files/easy highscore sort 1.txt","r")
     highscore_database.write(easy_sort1.read())
     highscore_database.close()
     highscore_sort1.close()
@@ -220,12 +221,13 @@ def highscore_append():
     compare_time()
 
 def compare_time():
+    print("COMPARING TIME")
     global original_line
     global line_original
-    global line_match   
+    global line_match
     do_append=False
     
-    highscore_sort2 = open("highscore sort 2.txt","r")
+    highscore_sort2 = open("text files/highscore sort 2.txt","r")
     highscore_sort2_count = 0
     
     for line in highscore_sort2:
@@ -234,10 +236,10 @@ def compare_time():
 
     highscore_sort2_count = int(highscore_sort2_count)
 
-    if highscore_highscore_count == highscore_sort2_count:
+    if highscore_count == highscore_sort2_count:
         line_match = True
 
-    highscore_database = open("highscore database.txt","r")
+    highscore_database = open("text files/highscore database.txt","r")
     for line_original in highscore_database:
         original_line = line_original.strip("\n").split(",")
         original = original_line[2]
@@ -246,7 +248,7 @@ def compare_time():
         score_original = original_line[1]
         score_original = int(score_original)
         
-        highscore_database = open("highscore database.txt","r")
+        highscore_database = open("text files/highscore database.txt","r")
         for line in highscore_database:
             compare_line = line.strip("\n").split(",")
             compare = compare_line[2]
@@ -278,13 +280,15 @@ def compare_time():
             highscore_append()
             
     highscore_database.close()
+    compare_score()
 
 def compare_score():
+    print("COMPARING SCORE")
     global selected_game_mode
     compare_score = 10
     for x in range(11):
-        highscore_sort2 = open("highscore sort 2.txt","r")
-        highscore_sort1 = open("highscore sort 1.txt","a")
+        highscore_sort2 = open("text files/highscore sort 2.txt","r")
+        highscore_sort1 = open("text files/highscore sort 1.txt","a")
         for line in highscore_sort2:
                 highscore_list = line.strip("\n").split(",")
                 original_score = int(highscore_list[1])
@@ -297,12 +301,37 @@ def compare_score():
     highscore_sort2.close()
     highscore_sort1.close()
 
+
+def update_highscores():
+    highscore_mode = str(highscore_mode_combobox.get())
+
+    highscore_sort1 = open("text files/highscore sort 1.txt","r")
+    for line in highscore_sort1:
+        print(line)
+        highscore_list = line.strip("\n").split(",")
+        difficulty = str(highscore_list[3])
+        difficulty = difficulty.title()
+        if difficulty == selected_view_mode:
+            print(line)
+
+    highscore_sort1.close()
+    
+    if highscore_mode == "Easy":
+        print("Easy")
+        
+    elif highscore_mode == "Medium":
+        print("Medium")
+
+    elif highscore_mode == "Hard":
+        print("Hard")
+
 def game_over():
     global score
     gameplay_window.withdraw()
     score_window.deiconify()     
     final_score = (score, "/10")
-    final_time = ("00:30")
+    final_time = (00.30)
+    final_time = str(final_time)
     score = str(score)
     append_score = str("," + score)
     append_time = str("," + final_time)
@@ -347,41 +376,17 @@ def game_over():
     score_data = str(login_username + append_score + append_time + append_game_mode)
 
     print("APPENDING")
-    highscore_database = open("highscore database.txt","a")
+    highscore_database = open("text files/highscore database.txt","a")
     highscore_database.write(score_data)
     print("highscore database")
     highscore_database.close()
-    #easy_highscore_database = open("easy highscore database.txt","r")
-    #easy_sort1 = open("easy highscore sort 1.txt","a")
-    #compare_score = 10
-
-        #while compare_score > 0:
-        #    for line in easy_highscore_database:
-        #        easy_highscore_list = line.strip("\n").split(",")
-        #        if easy_highscore_list[1] == compare_score:
-        #            easy_sort1.write(line)
-        #            compare_score  = (compare_score-1)
-        #            print(compare_score)
-        #            print("TEST")
-
-
-        #easy_highscore_database.close()
-        
-#    elif selected_game_mode == "Medium":
-#        medium_highscore_database = open("medium highscore database.txt","a")
-#        medium_highscore_database.write(score_data)
-#        medium_highscore_database.close()
-#        print("Written to medium highscore database")
-
-#    elif selected_game_mode == "Hard":
-#        hard_highscore_database = open("hard highscore database.txt","a")
-#        hard_highscore_database.write(score_data)
-#        hard_highscore_database.close()
-#        print("Written to hard highscore database")
+    
+    compare_time()
 
     score_window.mainloop()
 
 def view_highscores():
+    update_highscores()  
     welcome_window.withdraw()
     highscore_window.deiconify()
     home_button = tk.Button(highscore_window, text="Home", bg="#c1f0c1", fg="black", font=("Times New Roman",10), command=highscore_home)
@@ -402,18 +407,20 @@ def view_highscores():
     highscore_time_heading.grid(row=1, column = 6)
     button = tk.Button(highscore_window, text="Select", bg="#c1f0c1", fg="black", font=("Times New Roman",10), command=update_highscores)
     button.grid(row=2, column=1)
+
+    global highscore_count
+    highscore_database = open("text files/highscore database.txt","r")
+    highscore_sort1 = open("text files/highscore sort 1.txt","w")
+    highscore_sort2 = open("text files/highscore sort 2.txt","a")
+
+    for line in highscore_database:
+        highscore_count=highscore_count+1
+    highscore_database.close()
+
+    highscore_count = int(highscore_count)
+    
+    compare_time()
     update_highscores()
-
-def update_highscores():
-    highscore_mode = highscore_mode_combobox.get()
-    if highscore_mode == "Easy":
-        print("Easy")
-        
-    elif highscore_mode == "Medium":
-        print("Medium")
-
-    elif highscore_mode == "Hard":
-        print("Hard")
 
 def game_mode_submit():
     global selected_game_mode
@@ -511,7 +518,7 @@ def append_sign_up():
     username = str(sign_up_username_entry.get())
     password = "," + str(sign_up_password_entry.get()) + "\n"
     account_info = (username + password)
-    login_database = open("login database.txt","a")
+    login_database = open("text files/login database.txt","a")
     login_database.write(account_info)
     login_database.close()
     sign_up_return = askyesno(title="Sign up successful", message="Sign up successful. Would you like to return to the menu?", icon='question')
@@ -547,7 +554,7 @@ def append_login():
     login_password = str(login_password_entry.get())
     print("LOGIN: ",login_username)
     print("PASSWORD: ",login_password)
-    login_database = open("login database.txt","r")
+    login_database = open("text files/login database.txt","r")
     for line in login_database:
         login_list = line.strip("\n").split(",")
         print(login_list[0])
@@ -588,6 +595,10 @@ def main():
     global login_username_entry
     global login_password_entry
     global highscore_mode_combobox
+    highscore_sort1 = open("text files/highscore sort 1.txt","w")
+    highscore_sort1.write("")
+    highscore_sort2 = open("text files/highscore sort 2.txt","w")
+    highscore_sort2.write("")
     login_window.withdraw()
     sign_up_window.withdraw()
     gameplay_window.withdraw()
