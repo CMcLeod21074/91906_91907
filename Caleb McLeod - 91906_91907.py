@@ -86,11 +86,23 @@ shapes_easy = [
 
 ]
 
+
+highscore_database = open("text files/highscore database.txt","r")
+highscore_sort1 = open("text files/highscore sort 1.txt","a")
+highscore_sort2 = open("text files/highscore sort 2.txt","a")
+
 global highscore_count
 highscore_count = 0
 
 global line_match
 line_match = False
+
+for line in highscore_database:
+    highscore_count=highscore_count+1
+highscore_database.close()
+
+highscore_count = int(highscore_count)
+
 
 def display_shape():
     image = Image.open(selected_shape["image"])
@@ -200,43 +212,44 @@ def login_home():
 def quit():
     welcome_window.destroy()
 
-def highscore_append():
-    print("HIGHSCORE_APPEND()")
+def append_highscore():
     highscore_database = open("text files/highscore database.txt","r")
-    highscore_sort1 = open("text files/highscore sort 1.txt","w")
-    highscore_sort2 = open("text files/highscore sort 2.txt","a")
-    highscore_sort2.write(line_original)
+    highscore_sort2 = open("text files/highscore sort 2.txt","w")
+    highscore_sort1 = open("text files/highscore sort 1.txt","a")
+    highscore_sort1.write(line_original)
 
     for append_line in highscore_database:
         if append_line != line_original:
             final_append = (append_line)
-            highscore_sort1.write(final_append)
+            highscore_sort2.write(final_append)
 
-    highscore_database = open("text files/easy highscore database.txt","w")
-    highscore_sort1 = open("text files/easy highscore sort 1.txt","r")
-    highscore_database.write(easy_sort1.read())
+    highscore_database = open("text files/highscore database.txt","w")
+    highscore_sort2 = open("text files/highscore sort 2.txt","r")
+    highscore_database.write(highscore_sort2.read())
     highscore_database.close()
-    highscore_sort1.close()
     highscore_sort2.close()
+    highscore_sort1.close()
     compare_time()
 
 def compare_time():
-    print("COMPARING TIME")
     global original_line
     global line_original
     global line_match
+   
     do_append=False
-    
-    highscore_sort2 = open("text files/highscore sort 2.txt","r")
-    highscore_sort2_count = 0
-    
-    for line in highscore_sort2:
-        highscore_sort2_count=highscore_sort2_count+1
-    highscore_sort2.close()
+    name_match=False
+   
 
-    highscore_sort2_count = int(highscore_sort2_count)
+    highscore_sort1 = open("text files/highscore sort 1.txt","r")
+    highscore_sort1_count = 0
+    for line in highscore_sort1:
+        test = line.strip("\n").split(",")
+        highscore_sort1_count=highscore_sort1_count+1
+    highscore_sort1.close()
 
-    if highscore_count == highscore_sort2_count:
+    highscore_sort1_count = int(highscore_sort1_count)
+
+    if highscore_count == highscore_sort1_count:
         line_match = True
 
     highscore_database = open("text files/highscore database.txt","r")
@@ -247,7 +260,7 @@ def compare_time():
         name_original = original_line[0]
         score_original = original_line[1]
         score_original = int(score_original)
-        
+       
         highscore_database = open("text files/highscore database.txt","r")
         for line in highscore_database:
             compare_line = line.strip("\n").split(",")
@@ -256,65 +269,111 @@ def compare_time():
             name_compare = compare_line[0]
             score_compare = compare_line[1]
             score_compare = int(score_compare)
-      
+
+       
             if name_original != name_compare and original < compare:
                 do_append=True
+                name_match=False
 
             if name_original != name_compare and original == compare:
 
                 if score_original > score_compare:
                     do_append=True
+                    name_match=False
+
 
                 if score_original == score_compare:
                     do_append=True
-               
+                    name_match=False
+
+                   
                 if score_original < score_compare:
                     do_append=False
+                    name_match=False
                     break
+
 
             if name_original != name_compare and original > compare:
                 do_append=False
+                name_match=False
                 break
 
-        if do_append == True and line_match == False:
-            highscore_append()
-            
+        if do_append == True and name_match == False and line_match == False:
+            append_highscore()
+           
+       
     highscore_database.close()
-    compare_score()
+    
+highscore_sort2.close() ########
+    
 
 def compare_score():
-    print("COMPARING SCORE")
-    global selected_game_mode
     compare_score = 10
     for x in range(11):
-        highscore_sort2 = open("text files/highscore sort 2.txt","r")
-        highscore_sort1 = open("text files/highscore sort 1.txt","a")
-        for line in highscore_sort2:
+        highscore_sort1 = open("text files/highscore sort 1.txt","r")
+        highscore_sort2 = open("text files/highscore sort 2.txt","a")
+        for line in highscore_sort1:
                 highscore_list = line.strip("\n").split(",")
-                original_score = int(highscore_list[1])
-                difficulty = str(highscore_list[3])
-                difficulty = difficulty.title()
-                if original_score == compare_score:
-                    highscore_sort1.write(line)
+                default = int(highscore_list[1])
+                if default == compare_score:
+                    highscore_sort2.write(line)
+#                    print(line)
         compare_score = (compare_score-1)
 
-    highscore_sort2.close()
+    highscore_database.close()
     highscore_sort1.close()
+    highscore_sort2.close()
 
+def stage_two():
+    
+    highscore_sort2 = open("text files/highscore sort 2.txt","r")
+    highscore_save3 = open("text files/highscore save 3.txt","w")
+    highscore_save3.write(highscore_sort2.read())
+
+    highscore_save3 = open("text files/highscore save 3.txt","w")
+    highscore_save3.write(highscore_sort2.read())
+
+    highscore_save3 = open("text files/highscore save 3.txt","r")
+    highscore_database = open("text files/highscore database.txt","w")
+    highscore_database.write(highscore_save3.read())
+    
+    highscore_sort1 = open("text files/highscore sort 1.txt","w")
+    highscore_sort2 = open("text files/highscore sort 2.txt","w")
+    highscore_sort1.write("")
+    highscore_sort2.write("")
+
+    highscore_sort1.close()
+    highscore_sort2.close()
+    highscore_save3.close()
+    highscore_database.close()
+
+#    compare_time()
+#    compare_score()
+    
 
 def update_highscores():
+#    reset()
+    compare_time()
+    compare_score()
+    stage_two()
+
+#    highscore_database = open("text files/highscore database.txt","w")
+#    highscore_sort2 = open("text files/highscore sort 2.txt","r")
+#    highscore_database.write(highscore_sort2.read())
+    
     highscore_mode = str(highscore_mode_combobox.get())
 
-    highscore_sort1 = open("text files/highscore sort 1.txt","r")
-    for line in highscore_sort1:
-        print(line)
+    highscore_save3 = open("text files/highscore save 3.txt","r")
+    for line in highscore_save3:
+#        print(line)
         highscore_list = line.strip("\n").split(",")
         difficulty = str(highscore_list[3])
         difficulty = difficulty.title()
-        if difficulty == selected_view_mode:
+        if difficulty == highscore_mode:
             print(line)
 
-    highscore_sort1.close()
+#    highscore_database.close()
+    highscore_save3.close()
     
     if highscore_mode == "Easy":
         print("Easy")
@@ -324,6 +383,9 @@ def update_highscores():
 
     elif highscore_mode == "Hard":
         print("Hard")
+
+#    reset()
+
 
 def game_over():
     global score
@@ -381,12 +443,9 @@ def game_over():
     print("highscore database")
     highscore_database.close()
     
-    compare_time()
-
     score_window.mainloop()
 
 def view_highscores():
-    update_highscores()  
     welcome_window.withdraw()
     highscore_window.deiconify()
     home_button = tk.Button(highscore_window, text="Home", bg="#c1f0c1", fg="black", font=("Times New Roman",10), command=highscore_home)
@@ -408,20 +467,8 @@ def view_highscores():
     button = tk.Button(highscore_window, text="Select", bg="#c1f0c1", fg="black", font=("Times New Roman",10), command=update_highscores)
     button.grid(row=2, column=1)
 
-    global highscore_count
-    highscore_database = open("text files/highscore database.txt","r")
-    highscore_sort1 = open("text files/highscore sort 1.txt","w")
-    highscore_sort2 = open("text files/highscore sort 2.txt","a")
-
-    for line in highscore_database:
-        highscore_count=highscore_count+1
-    highscore_database.close()
-
-    highscore_count = int(highscore_count)
+#    update_highscores()
     
-    compare_time()
-    update_highscores()
-
 def game_mode_submit():
     global selected_game_mode
     selected_game_mode = str(game_mode.get())
@@ -595,10 +642,6 @@ def main():
     global login_username_entry
     global login_password_entry
     global highscore_mode_combobox
-    highscore_sort1 = open("text files/highscore sort 1.txt","w")
-    highscore_sort1.write("")
-    highscore_sort2 = open("text files/highscore sort 2.txt","w")
-    highscore_sort2.write("")
     login_window.withdraw()
     sign_up_window.withdraw()
     gameplay_window.withdraw()
