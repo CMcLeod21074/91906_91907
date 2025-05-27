@@ -11,6 +11,7 @@ from tkinter import messagebox
 from tkinter.messagebox import askyesno
 from PIL import Image, ImageTk
 import time
+import threading
 
 welcome_window = tk.Tk() #Create welcome window
 welcome_window.title("Home")
@@ -51,7 +52,8 @@ username_frame.configure(background="#6fdc6f")
 
 question_frame = tk.LabelFrame(gameplay_window) 
 question_frame.grid(row=2, column=1)
-question_frame.configure(background="#98e698", border=1)
+#question_frame.geometry("500x300")
+question_frame.configure(background="#98e698", border=1, height = 300, width = 500)
 
 score_frame = tk.LabelFrame(score_window)
 score_frame.grid(row=1, column=1)
@@ -97,6 +99,17 @@ highscore_count = 0
 global line_match
 line_match = False
 
+global stop_move
+stop_move = False
+   
+user_x = 200
+user_y = 50
+user_step = 30
+
+com_x = 100
+com_y = 50
+com_step = 30
+
 for line in highscore_database:
     highscore_count=highscore_count+1
 highscore_database.close()
@@ -137,6 +150,8 @@ def choose_shape():
 def verify_answer():
     global correct_answer
     global score
+    global stop_move
+ 
     user_answer = user_answer_entry.get()
     user_answer = int(user_answer)
     if selected_shape["type"] == "area":
@@ -158,7 +173,7 @@ def verify_answer():
         display_question_label.destroy()
         score = (score+1)
         print("Score: ",score)
-
+        move_user()
         next_question()
         
     else:
@@ -166,14 +181,16 @@ def verify_answer():
         print("Score: ",score)
         display_question_label.destroy()
         next_question()
-        
-        
+            
 def next_question():
     if question_num <2:
         choose_shape()
+        stop_move = False
 
     else:
+        stop_move = True
         game_over()
+        
 
 def temp_game_over():
     global login_username
@@ -212,6 +229,23 @@ def login_home():
 def quit():
     welcome_window.destroy()
 
+def move_user():
+    global user_x
+    user_x = (user_x + user_step)
+    canvas.coords(mouse, user_x, user_y)
+
+def move_com():
+    global com_x
+    global stop_move
+    while stop_move == False:
+        time.sleep(8)
+        com_x = (com_x + com_step)
+        canvas.coords(cat, com_x, com_y)
+        print("com x =",com_x)
+
+move_com_thread = threading.Thread(target=move_com)
+
+      
 def append_highscore():
     highscore_database = open("text files/highscore database.txt","r")
     highscore_sort2 = open("text files/highscore sort 2.txt","w")
@@ -239,7 +273,6 @@ def compare_time():
     do_append=False
     name_match=False
    
-
     highscore_sort1 = open("text files/highscore sort 1.txt","r")
     highscore_sort1_count = 0
     for line in highscore_sort1:
@@ -281,17 +314,14 @@ def compare_time():
                     do_append=True
                     name_match=False
 
-
                 if score_original == score_compare:
                     do_append=True
                     name_match=False
-
-                   
+              
                 if score_original < score_compare:
                     do_append=False
                     name_match=False
                     break
-
 
             if name_original != name_compare and original > compare:
                 do_append=False
@@ -300,8 +330,7 @@ def compare_time():
 
         if do_append == True and name_match == False and line_match == False:
             append_highscore()
-           
-       
+                 
     highscore_database.close()
     
 highscore_sort2.close() ########
@@ -356,13 +385,10 @@ def update_highscores():
     compare_time()
     compare_score()
     stage_two()
-
 #    highscore_database = open("text files/highscore database.txt","w")
 #    highscore_sort2 = open("text files/highscore sort 2.txt","r")
-#    highscore_database.write(highscore_sort2.read())
-    
+#    highscore_database.write(highscore_sort2.read())    
     highscore_mode = str(highscore_mode_combobox.get())
-
     highscore_save3 = open("text files/highscore save 3.txt","r")
     for line in highscore_save3:
 #        print(line)
@@ -371,10 +397,9 @@ def update_highscores():
         difficulty = difficulty.title()
         if difficulty == highscore_mode:
             print(line)
-
 #    highscore_database.close()
     highscore_save3.close()
-    
+   
     if highscore_mode == "Easy":
         print("Easy")
         
@@ -387,20 +412,30 @@ def update_highscores():
 #    reset()
 
 
-def game_over():
+def game_over(): 
     global score
     gameplay_window.withdraw()
-    score_window.deiconify()     
+    score_window.deiconify()
+
+    home_icon = Image.open("images/icons/home.png")
+    home_icon = home_icon.resize((25,25))
+    home_icon = ImageTk.PhotoImage(home_icon)
+    
     final_score = (score, "/10")
-    final_time = (00.30)
+    
+    end_time = time.time()
+    end_time = int(end_time)
+    final_time = (end_time - user_time)
     final_time = str(final_time)
+    print("FINAL TIME:", final_time)
+
     score = str(score)
     append_score = str("," + score)
     append_time = str("," + final_time)
     append_game_mode = str("," + selected_game_mode + "\n")
-    home_button = tk.Button(score_window, text="Home", bg="#c1f0c1", fg="black", font=("Times New Roman",10), command=score_home)
+    home_button = tk.Button(score_window, image=home_icon, bg="#c1f0c1", command=score_home)
     home_button.grid(row=0, column=3)
-    play_again_button = tk.Button(score_window, text="Play again", bg="#c1f0c1", fg="black", font=("Times New Roman",10), command=gameplay)
+    play_again_button = tk.Button(score_window, text="Play again", bg="#c1f0c1", fg="black", font=("Times New Roman",10), command=play_again)
     play_again_button.grid(row=0, column=0)
     
     game_over_username_heading = tk.Label(score_frame, text="Username", bg="#6fdc6f", font=("Times New Roman",14))
@@ -448,7 +483,12 @@ def game_over():
 def view_highscores():
     welcome_window.withdraw()
     highscore_window.deiconify()
-    home_button = tk.Button(highscore_window, text="Home", bg="#c1f0c1", fg="black", font=("Times New Roman",10), command=highscore_home)
+
+    home_icon = Image.open("images/icons/home.png")
+    home_icon = home_icon.resize((25,25))
+    home_icon = ImageTk.PhotoImage(home_icon)
+    
+    home_button = tk.Button(highscore_window, image = home_icon, bg="#c1f0c1", fg="black", command=highscore_home)
     home_button.grid(row=0, column=3)
     highscore_placing_heading = tk.Label(highscore_frame, text="Placing", bg="#6fdc6f", font=("Times New Roman",14))
     highscore_placing_heading.grid(row=1, column = 0)
@@ -473,10 +513,16 @@ def game_mode_submit():
     global selected_game_mode
     selected_game_mode = str(game_mode.get())
     print(selected_game_mode)
+#    play_again()
     gameplay()
 
 def game_mode_selection():
     global game_mode
+
+    home_icon = Image.open("images/icons/home.png")
+    home_icon = home_icon.resize((25,25))
+    home_icon = ImageTk.PhotoImage(home_icon)
+   
     login_window.withdraw()
     game_mode_window.deiconify()
     game_mode = StringVar() 
@@ -491,7 +537,7 @@ def game_mode_selection():
     game_mode_hard.deselect()
     game_mode_button = tk.Button(game_mode_window, text="Select", bg="#c1f0c1", fg="black", command=game_mode_submit)
     game_mode_button.grid(row=5, column=3)
-    game_mode_home_button = tk.Button(game_mode_window, text="Home", bg="#c1f0c1", fg="black", command=game_mode_home)
+    game_mode_home_button = tk.Button(game_mode_window, image=home_icon, bg="#c1f0c1", command=game_mode_home)
     game_mode_home_button.grid(row=0, column=3)
     game_mode_label = tk.Label(game_mode_window, text="Select a game mode:   ", bg="#6fdc6f", font=("Times New Roman",14))
     game_mode_label.grid(row=0, column =0) 
@@ -516,15 +562,29 @@ def welcome():
     logo_label = tk.Label(welcome_window, bg="#6fdc6f", image=logo)
     logo_label.grid(row=1, column=1)
     welcome_window.mainloop()
+
+def play_again():
+    username_label.destroy()
+    level_label.destroy()
+##    game_over_username.destroy()
+##    game_over_score.destroy()
+##    game_over_difficulty.destroy()
+    gameplay()
     
+
 def gameplay():
     global score
     global question_num
     global question_type
     global shapes_list
-    ###########
-    #login_username = "Default"
-    ###########
+    global user_time
+    global username_label
+    global level_label
+
+    home_icon = Image.open("images/icons/home.png")
+    home_icon = home_icon.resize((25,25))
+    home_icon = ImageTk.PhotoImage(home_icon)
+    
     shapes_list = shapes_easy.copy()
     score = 0
     question_num = 0
@@ -534,24 +594,41 @@ def gameplay():
     game_mode_window.withdraw()
     gameplay_window.deiconify() 
     choose_shape()
+
+    user_time = time.time()
+
+    user_time = int(user_time)
+    
+    print(user_time)
+    
     if selected_game_mode == "Medium":
         level_label_size = 10
     else:
         level_label_size = 14
+
+
+    move_com_thread.start()
+        
     username_label = tk.Label(username_frame, text=login_username, bg="#6fdc6f", font=("Times New Roman",14))
     username_label.grid(row=1, column = 0)
     level_label = tk.Label(gameplay_window, text=selected_game_mode, bg="#6fdc6f", font=("Times New Roman",level_label_size))
     level_label.grid(row=1, column = 4)
     submit_button = tk.Button(question_frame, text="Submit", bg="#c1f0c1", fg="black", font=("Times New Roman",10), command=verify_answer)
     submit_button.grid(row=1, column=2)
-    home_button = tk.Button(gameplay_window, text="Home", bg="#c1f0c1", fg="black", font=("Times New Roman",10) , command=gameplay_home)
+    home_button = tk.Button(gameplay_window, image=home_icon, bg="#c1f0c1",command=gameplay_home)
     home_button.grid(row=0, column=4)
     gameplay_window.mainloop()
+
 
 def sign_up():
     welcome_window.withdraw()
     sign_up_window.deiconify()
-    home_button = tk.Button(sign_up_window, text="Home", bg="#c1f0c1", fg="black", font=("Times New Roman",10), command=sign_up_home)
+
+    home_icon = Image.open("images/icons/home.png")
+    home_icon = home_icon.resize((25,25))
+    home_icon = ImageTk.PhotoImage(home_icon)
+    
+    home_button = tk.Button(sign_up_window, image=home_icon, bg="#c1f0c1", command=sign_up_home)
     home_button.grid(row=0, column=1)
     sign_up_username_label = tk.Label(sign_up_window, text="Username", bg="#6fdc6f", font=("Times New Roman",14))
     sign_up_username_label.grid(row=1, column=0)
@@ -584,7 +661,12 @@ def login():
     login_window.deiconify()
     login_username_entry.delete(0, tk.END)
     login_password_entry.delete(0, tk.END)
-    home_button = tk.Button(login_window, text="Home", bg="#c1f0c1", fg="black", font=("Times New Roman",10), command=login_home)
+
+    home_icon = Image.open("images/icons/home.png")
+    home_icon = home_icon.resize((25,25))
+    home_icon = ImageTk.PhotoImage(home_icon)
+    
+    home_button = tk.Button(login_window, image = home_icon, bg="#c1f0c1", command=login_home)
     home_button.grid(row=0, column=1)
     login_username_label = tk.Label(login_window, text="Username", bg="#6fdc6f", font=("Times New Roman",14))
     login_username_label.grid(row=1, column=0)
@@ -678,7 +760,7 @@ mouse_image = Image.open("images/characters_background/mouse2.png")
 mouse_image = ImageTk.PhotoImage(mouse_image)
 
 bg = canvas.create_image(280, 0, image=bg_image)
-cat = canvas.create_image(100, 50, image=cat_image)
-mouse = canvas.create_image(200, 50, image=mouse_image)
+cat = canvas.create_image(com_x, com_y, image=cat_image)
+mouse = canvas.create_image(user_x, user_y, image=mouse_image)
 
 main()
