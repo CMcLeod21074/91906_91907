@@ -12,6 +12,8 @@ from tkinter.messagebox import askyesno
 from PIL import Image, ImageTk
 import time
 import threading
+import os
+from fpdf import FPDF
 
 welcome_window = tk.Tk() #Create welcome window
 welcome_window.title("Home")
@@ -143,7 +145,7 @@ def choose_shape():
     print("Question Type: ", question_type)
     
     question_label_text = "What is the "+question_type+" of this shape?"
-    display_question_label = tk.Label(question_frame, text=question_label_text, bg="#98e698", font=("Times New Roman",20))
+    display_question_label = tk.Label(question_frame, width = 10, text=question_label_text, bg="#98e698", font=("Times New Roman",20))
     display_question_label.grid(row=0, column=0)
     display_shape()
     
@@ -183,7 +185,7 @@ def verify_answer():
         next_question()
             
 def next_question():
-    if question_num <2:
+    if question_num <10:
         choose_shape()
         stop_move = False
 
@@ -203,6 +205,8 @@ def temp_game_over():
     welcome_window.withdraw()
     
 def gameplay_home():
+    global stop_move
+    stop_move = True
     welcome_window.deiconify()
     gameplay_window.withdraw()
 
@@ -227,6 +231,7 @@ def login_home():
     login_window.withdraw()    
 
 def quit():
+    stop_move = True
     welcome_window.destroy()
 
 def move_user():
@@ -508,6 +513,9 @@ def view_highscores():
     button.grid(row=2, column=1)
 
 #    update_highscores()
+
+
+    
     
 def game_mode_submit():
     global selected_game_mode
