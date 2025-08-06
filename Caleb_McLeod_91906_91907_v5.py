@@ -3,8 +3,6 @@
 #Purpose: A maths game that asks the user for the area, perimeter, surface area or volume of shapes
 #---------------------------------------------------------------------------------------------------
 
-#CHECK THAT THIS IS HERE
-
 import random
 import tkinter as tk
 from tkinter import *
@@ -1037,3 +1035,4 @@ home_icon = home_icon.resize((25,25))
 home_icon = ImageTk.PhotoImage(home_icon)
 
 main()
+
