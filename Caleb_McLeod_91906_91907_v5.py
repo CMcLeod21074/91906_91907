@@ -3,6 +3,8 @@
 #Purpose: A maths game that asks the user for the area, perimeter, surface area or volume of shapes
 #---------------------------------------------------------------------------------------------------
 
+#CHECK THAT THIS IS HERE
+
 import random
 import tkinter as tk
 from tkinter import *
@@ -17,58 +19,58 @@ from fpdf import FPDF
 
 #___________Windows________________
 
-welcome_window = tk.Tk() #Create welcome window
+welcome_window = tk.Tk() # Create welcome window.
 welcome_window.title("A Game of Cat and Mouse - Home")
 welcome_window.geometry("250x300")
 welcome_window.configure(background="#6fdc6f")
 
-gameplay_window = tk.Toplevel() #Create gameplay window
+gameplay_window = tk.Toplevel() # Create gameplay window.
 gameplay_window.title("Gameplay")
 gameplay_window.geometry("710x520")
 gameplay_window.configure(background="#6fdc6f")
 
-game_mode_window = tk.Toplevel() #Create game mode selection window
+game_mode_window = tk.Toplevel() # Create game mode selection window.
 game_mode_window.title("Gamemode Selection")
 game_mode_window.geometry("320x190")
 game_mode_window.configure(background="#6fdc6f")
 
-score_window = tk.Toplevel() #Create score window
+score_window = tk.Toplevel() # Create score window.
 score_window.title("Score")
 score_window.configure(background="#6fdc6f")
 
-highscore_window = tk.Toplevel() #Create highscore window
+highscore_window = tk.Toplevel() # Create highscore window.
 highscore_window.title("My Highscores")
 highscore_window.configure(background="#6fdc6f")
 
-sign_up_window = tk.Toplevel() #Create sign up window
+sign_up_window = tk.Toplevel() # Create sign up window.
 sign_up_window.title("Sign Up")
 sign_up_window.geometry("300x110")
 sign_up_window.configure(background="#6fdc6f")
 
-login_window = tk.Toplevel() #Create login window
+login_window = tk.Toplevel() # Create login window.
 login_window.title("Login")
 login_window.geometry("300x110")
 login_window.configure(background="#6fdc6f")
 
-username_frame = tk.LabelFrame(gameplay_window)
+username_frame = tk.LabelFrame(gameplay_window) # Create frame for username in gameplay window.
 username_frame.grid(row=1, column=0)
 username_frame.configure(background="#6fdc6f")
 
-question_frame = tk.LabelFrame(gameplay_window) 
+question_frame = tk.LabelFrame(gameplay_window) # Create frame for questions in gameplay window.
 question_frame.grid(row=2, column=1)
 question_frame.configure(background="#98e698", border=1, height = 300, width = 500)
 
-score_frame = tk.LabelFrame(score_window)
+score_frame = tk.LabelFrame(score_window) # Create frame to display scores in game over/score window.
 score_frame.grid(row=2, column=1)
 score_frame.configure(background="#6fdc6f")
 
-highscore_frame = tk.LabelFrame(highscore_window)
+highscore_frame = tk.LabelFrame(highscore_window) # Create frame to display highscores in "my highscores" window.
 highscore_frame.grid(row=3, column=1)
 highscore_frame.configure(background="#6fdc6f")
 
 #___________Question Images________________
 
-#Database of shapes
+# Database of shapes.
 shapes_easy = [
     {"type": "area", "shape": "triangle", "base": 6, "height": 4, "image": "images/easy/area/t6x4.png"},
     {"type": "area", "shape": "triangle", "base": 7, "height": 4, "image": "images/easy/area/t7x4.png"},
@@ -165,12 +167,7 @@ global stop_move
 stop_move = False
 
 global catchup
-
 global win
-
-global highscore_difficulty
-global highscore_score
-global highscore_time
 
 user_x = 200
 user_y = 70
@@ -214,7 +211,7 @@ def choose_shape(): # Function that randomly selects a shape.
     display_question_label.grid(row=0, column=0)
     display_shape()
     
-def verify_answer(): # unction that checks if the users input is valid and, if so whether it is the correct answer.
+def verify_answer(): # Function that checks if the users input is valid and, if so whether it is the correct answer.
     global correct_answer
     global score
     global wrong_move
@@ -230,7 +227,7 @@ def verify_answer(): # unction that checks if the users input is valid and, if s
     
     user_answer = int(user_answer)
 
-    if selected_game_mode == "Easy":
+    if selected_game_mode == "Easy": # Calculates correct answer using formula based on question type.
         if selected_shape["type"] == "area":
             if selected_shape["shape"] == "triangle":
                 correct_answer = (selected_shape["base"] * selected_shape["height"]) //2
@@ -388,7 +385,7 @@ def move_user(): # Moves the user character (Mouse) forward when they get the ri
     user_x = int(user_x)
     catch_up = (user_x - 60) 
     
-    if user_x >=500:
+    if user_x >=500: # If the user character (Mouse) reaches the "finish line" gameplay ends.
         stop_move = True
         win = True
         game_over()
@@ -406,7 +403,7 @@ def incorrect_move_com(): # Moves the computer character (Cat) forward if an inc
 
     catch_up = (user_x - 60)
     
-    if com_x >= catch_up:
+    if com_x >= catch_up: # If the computer character (Cat) catches up to the user character (Mouse) gameplay ends. 
         gameplay_window.after_cancel(move_com_id)
         win = False
         game_over()
@@ -426,7 +423,7 @@ def move_com(): # Moves the computer character (Cat) forward every 8 seconds.
     catch_up = (user_x - 60)
 
     if stop_move == False:
-        if com_x >= catch_up:
+        if com_x >= catch_up: # If the computer character (Cat) catches up to the user character (Mouse) gameplay ends.
             win = False
             game_over()
         else:
@@ -491,7 +488,7 @@ def game_over(): # Function that displas game over screen, indicating whether th
     win_lose_label = tk.Label(score_window, text=score_text, bg="#6fdc6f", font=("Times New Roman",20))
     win_lose_label.grid(row=1, column=1)
     
-    game_over_username_heading = tk.Label(score_frame, text="Username", bg="#6fdc6f", font=("Times New Roman",14))
+    game_over_username_heading = tk.Label(score_frame, text="Username", bg="#6fdc6f", font=("Times New Roman",14)) # Score summary.
     game_over_username_heading.grid(row=1, column = 0)
     game_over_tab1 = tk.Label(score_frame, text="\t", bg="#6fdc6f")
     game_over_tab1.grid(row=1, column = 1)
@@ -523,7 +520,7 @@ def game_over(): # Function that displas game over screen, indicating whether th
     
     score_data = str(login_username + append_score + append_time + append_game_mode)
 
-    highscore_database = open("text files/highscore database.txt","a")
+    highscore_database = open("text files/highscore database.txt","a") # Appends score summary to highscore database/
     highscore_database.write(score_data)
 
     highscore_database.close()
@@ -569,7 +566,7 @@ def print_pdf(): # Converts the users score summary to a pdf and prints it.
     global final_time
     global selected_game_mode
 
-    do_print = askyesno(title="Print score summary", message="Do you want to print a copy of your score summary?", icon='question')
+    do_print = askyesno(title="Print score summary", message="Do you want to print a copy of your score summary?", icon='question') # Asks the user if they want to print a copy of their score summary
 
     if do_print == True:       
         final_time = str(final_time + " seconds")
@@ -605,17 +602,17 @@ def print_pdf(): # Converts the users score summary to a pdf and prints it.
         
         except Exception as e:
             error_message1 = ("Could not open PDF. Error:", e)
-            messagebox.showinfo(title="Error", message = error_message1)
+            messagebox.showinfo(title="Error", message = error_message1) # Error messages
 
         try:
             os.startfile(pdf_location, "print")
         except Exception as e:
             error_message2 = ("Could not print PDF. Error:", e)
-            messagebox.showinfo(title="Error", message = error_message2)
+            messagebox.showinfo(title="Error", message = error_message2) # Error messages
 
 #___________Displaying Highscores________________
     
-def display(): # Displays the highscores when the user alters the combobox entry.
+def display(): # Displays the users highscores.
     global highscore_mode_combobox
     global highscore_difficulty_easy
     global highscore_username_easy
@@ -629,11 +626,8 @@ def display(): # Displays the highscores when the user alters the combobox entry
     global highscore_username_hard
     global highscore_score_hard
     global highscore_time_hard
-    
     global login_username
 
-    #for x in range(3):
-         
        
     try:             
         row = 2
@@ -676,7 +670,7 @@ def display(): # Displays the highscores when the user alters the combobox entry
     except NameError:
         welcome_window.deiconify()
         highscore_window.withdraw()
-        messagebox.showwarning(title="Error", message = "Please login to view your highscores")
+        messagebox.showwarning(title="Error", message = "Please login to view your highscores") # Error message.
     
 def view_highscores(): # Highscore viewing.
     global home_icon
@@ -696,7 +690,7 @@ def view_highscores(): # Highscore viewing.
     highscore_title_label = tk.Label(highscore_window, text="My Highscores:", bg="#6fdc6f", font=("Times New Roman",20))
     highscore_title_label.grid(row=1, column=1)
     
-    highscore_difficulty_heading = tk.Label(highscore_frame, text="Difficulty", bg="#6fdc6f", font=("Times New Roman",14)) #Highscore headings
+    highscore_difficulty_heading = tk.Label(highscore_frame, text="Difficulty", bg="#6fdc6f", font=("Times New Roman",14)) # Highscore headings,
     highscore_difficulty_heading.grid(row=1, column = 0)
     highscore_tab1 = tk.Label(highscore_frame, text="\t", bg="#6fdc6f")
     highscore_tab1.grid(row=1, column = 1)
@@ -717,7 +711,7 @@ def game_mode_submit(): # Confirms the users selected game mode.
     
     selected_game_mode = str(game_mode.get())
 
-    if selected_game_mode == "Easy":
+    if selected_game_mode == "Easy": # Alters how long the interval between the movement of the computer character (Cat) is depending on the selected game mode.
         computer_delay = 8000
 
     if selected_game_mode == "Medium":
@@ -763,7 +757,7 @@ def game_mode_selection(): # Radio button selection for user to select theie des
     
 #___________Main Gameplay________________
 
-def welcome(): 
+def welcome(): # Home screen.
     quit_button = tk.Button(welcome_window, text="Quit", bg="#c1f0c1", fg="black", font=("Times New Roman",10), command=quit_game)
     quit_button.grid(row=0, column=2)
     login_button = tk.Button(welcome_window, width = 13, text="Login", bg="#c1f0c1", fg="black", font=("Times New Roman",10), command=login)
@@ -801,7 +795,7 @@ def gameplay(): # Main game function.
     
     stop_move = False
 
-    move_com_id = gameplay_window.after(computer_delay,move_com) # Moves computer character every 8 seconds.
+    move_com_id = gameplay_window.after(computer_delay,move_com) # Moves computer character a selected interval.
     
     home_icon = Image.open("images/icons/home.png") # Home button icon.
     home_icon = home_icon.resize((25,25))
