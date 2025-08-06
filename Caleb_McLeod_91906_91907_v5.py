@@ -444,6 +444,7 @@ def game_over(): # Function that displas game over screen, indicating whether th
     global game_over_score  
     global game_over_time
     global game_over_difficulty
+    global win_lose_label
 
 
     gameplay_window.after_cancel(move_com_id)
@@ -762,7 +763,7 @@ def game_mode_selection(): # Radio button selection for user to select theie des
     game_mode_window.deiconify()
     game_mode = StringVar()
     
-    game_mode_easy = tk.Radiobutton(game_mode_window, text="Easy ── (Triangles, Sqaures and Rectangles)", variable=game_mode, value="Easy", bg="#6fdc6f")
+    game_mode_easy = tk.Radiobutton(game_mode_window, text="Easy ── (Triangles, Squares and Rectangles)", variable=game_mode, value="Easy", bg="#6fdc6f")
     game_mode_easy.grid(row=1, column=0, sticky="w")
     game_mode_easy.select()
     game_mode_medium = tk.Radiobutton(game_mode_window, text="Medium ── (Irregular Shapes)", variable=game_mode, value="Medium", bg="#6fdc6f")
@@ -883,10 +884,12 @@ def play_again(): # Function that resets game when play again button is clicked.
     global com_x
     global display_question_label
     global level_label
+    global win_lose_label 
     
     username_label.destroy()
     level_label.destroy()    
-    display_question_label.destroy()       
+    display_question_label.destroy()
+    win_lose_label.destroy()
     gameplay()
 
 #___________Login/Sign Up________________
@@ -915,37 +918,46 @@ def sign_up(): # Function that leads user to sign up window.
 def append_sign_up(): # Function that appends username and password to .txt file.
     username = str(sign_up_username_entry.get())
     password = "," + str(sign_up_password_entry.get()) + "\n"
+    password_check = str(sign_up_password_entry.get())
     account_info = (username + password)
     
     login_database = open("text files/login database.txt","r")
 
     username_exists = False
-    
-    for line in login_database:
-        account_info_list = line.strip("\n").split(",")
-        compare_username = str(account_info_list[0])
-        if compare_username == username:
-            username_exists = True
 
-    if username_exists == True:
-        messagebox.showwarning(title="Username Exists", message="This username already exists. Please choose a different username.")
+    if username == "" or password_check == "":
+        messagebox.showwarning(title="Enter a username and password", message="Please enter a username and a password.")   
         sign_up_username_entry.delete(0, tk.END)
         sign_up_password_entry.delete(0, tk.END)
+        sign_up()
 
     else:
-        login_database = open("text files/login database.txt","a")
-        login_database.write(account_info)
-        login_database.close()
-        sign_up_return = askyesno(title="Sign up successful", message="Sign up successful. Would you like to return to the menu?", icon='question')
+    
+        for line in login_database:
+            account_info_list = line.strip("\n").split(",")
+            compare_username = str(account_info_list[0])
+            if compare_username == username:
+                username_exists = True
 
-        if sign_up_return == True:
-            sign_up_home()
+        if username_exists == True:
+            messagebox.showwarning(title="Username Exists", message="This username already exists. Please choose a different username.")
             sign_up_username_entry.delete(0, tk.END)
             sign_up_password_entry.delete(0, tk.END)
+
+        else:
+            login_database = open("text files/login database.txt","a")
+            login_database.write(account_info)
+            login_database.close()
+            sign_up_return = askyesno(title="Sign up successful", message="Sign up successful. Would you like to return to the menu?", icon='question')
+
+            if sign_up_return == True:
+                sign_up_home()
+                sign_up_username_entry.delete(0, tk.END)
+                sign_up_password_entry.delete(0, tk.END)
         
-        elif sign_up_return == False:
-            sign_up_username_entry.delete(0, tk.END)
-            sign_up_password_entry.delete(0, tk.END)
+            elif sign_up_return == False:
+                sign_up_username_entry.delete(0, tk.END)
+                sign_up_password_entry.delete(0, tk.END)
 
 def login(): # Function that leads user to login window.
     global home_icon
