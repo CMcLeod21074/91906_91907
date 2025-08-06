@@ -627,7 +627,8 @@ def display(): # Displays the users highscores.
     global login_username
 
        
-    try:             
+    try:
+        login_username = login_username
         row = 2
         highscore_database = open("text files/highscore database.txt","r")
     
@@ -673,10 +674,18 @@ def display(): # Displays the users highscores.
 def view_highscores(): # Highscore viewing.
     global home_icon
     global highscore_mode_combobox
-    global highscore_difficulty
-    global highscore_username
-    global highscore_score
-    global highscore_time
+    global highscore_difficulty_easy
+    global highscore_username_easy
+    global highscore_score_easy
+    global highscore_time_easy
+    global highscore_difficulty_medium
+    global highscore_username_medium
+    global highscore_score_medium
+    global highscore_time_medium
+    global highscore_difficulty_hard
+    global highscore_username_hard
+    global highscore_score_hard
+    global highscore_time_hard
     
     welcome_window.withdraw()
     game_mode_window.withdraw()
@@ -698,6 +707,27 @@ def view_highscores(): # Highscore viewing.
     highscore_tab3.grid(row=1, column = 5)
     highscore_time_heading = tk.Label(highscore_frame, text="Time", bg="#6fdc6f", font=("Times New Roman",14))
     highscore_time_heading.grid(row=1, column = 6)
+
+    highscore_difficulty_easy = tk.Label(highscore_frame, text="Easy", bg="#6fdc6f", font=("Times New Roman",10))
+    highscore_difficulty_easy.grid(row=2, column=0)
+    highscore_score_easy = tk.Label(highscore_frame, text="", bg="#6fdc6f", font=("Times New Roman",10))
+    highscore_score_easy.grid(row=2, column=4)
+    highscore_time_easy = tk.Label(highscore_frame, text="", bg="#6fdc6f", font=("Times New Roman",10))
+    highscore_time_easy.grid(row=2, column=6)
+
+    highscore_difficulty_medium = tk.Label(highscore_frame, text="Medium", bg="#6fdc6f", font=("Times New Roman",10))
+    highscore_difficulty_medium.grid(row=3, column=0)
+    highscore_score_medium = tk.Label(highscore_frame, text="", bg="#6fdc6f", font=("Times New Roman",10))
+    highscore_score_medium.grid(row=3, column=4)
+    highscore_time_medium = tk.Label(highscore_frame, text="", bg="#6fdc6f", font=("Times New Roman",10))
+    highscore_time_medium.grid(row=3, column=6)
+
+    highscore_difficulty_hard = tk.Label(highscore_frame, text="Hard", bg="#6fdc6f", font=("Times New Roman",10))
+    highscore_difficulty_hard.grid(row=4, column=0)
+    highscore_score_hard = tk.Label(highscore_frame, text="", bg="#6fdc6f", font=("Times New Roman",10))
+    highscore_score_hard.grid(row=4, column=4)
+    highscore_time_hard = tk.Label(highscore_frame, text="", bg="#6fdc6f", font=("Times New Roman",10))
+    highscore_time_hard.grid(row=4, column=6)
 
     display()
 
@@ -947,7 +977,7 @@ def append_login(): # Function that checks login information (username and passw
     global login_password
     login_username = str(login_username_entry.get())
     login_password = str(login_password_entry.get())
-
+    no_login_found = True
     login_database = open("text files/login database.txt","r")
     for line in login_database:
         login_list = line.strip("\n").split(",")
@@ -1035,4 +1065,3 @@ home_icon = home_icon.resize((25,25))
 home_icon = ImageTk.PhotoImage(home_icon)
 
 main()
-
